@@ -87,8 +87,16 @@ pnl_plot(SPY)
 **Your Answers here:**
 <br>
 AAPL ticket was pulled by the file named dataSet1.R. It was pulled by the array function c("SPY", "AAPL"), then defined into the variable mytickers.
-<br>
-<br>mytickers = c("SPY", "AAPL")
+
+mytickers = c("SPY", "AAPL")
+
+mean(AAPL)
+[1] 0.001478376
+sum(AAPL)
+[1] 5.954898
+sd(AAPL,na.rm=FALSE)
+[1] 0.02390385
+
 <br>
 
 <hr>
