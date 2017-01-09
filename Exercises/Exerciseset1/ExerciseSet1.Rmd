@@ -88,27 +88,28 @@ pnl_plot(SPY)
 <br>
 AAPL ticket was pulled by the file named dataSet1.R. It was pulled by the array function c("SPY", "AAPL"), then defined into the variable mytickers.
 
-mytickers = c("SPY", "AAPL")
-
-Average:
-> mean(AAPL)
+> mytickers = c("SPY", "AAPL")
 
 mean(AAPL)
 [1] 0.001478376
+
 sum(AAPL)
 [1] 5.954898
+
 sd(AAPL,na.rm=FALSE)
 [1] 0.02390385
 
 To get Yahoo's Data, we have to modify the array in dataSet1.R to include Yahoo's ticker. The arracy becomes:
-mytickers = c("SPY", "AAPL", "YHOO")
+> mytickers = c("SPY", "AAPL", "YHOO")
 
 YHOO = StockReturns[,"YHOO"]
 sum(YHOO)
 [1] 2.887016
-> mean(YHOO)
+
+mean(YHOO)
 [1] 0.000716737
-> sd(YHOO, na.rm=FALSE)
+
+sd(YHOO, na.rm=FALSE)
 [1] 0.03020438
 
 <br>
