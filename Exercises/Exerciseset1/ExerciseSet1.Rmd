@@ -152,6 +152,16 @@ We can also transpose the matrix of returns to create a new "horizontal" matrix.
 
 **Your Answers here:**
 <br>
+To get number of rows, we use the command:
+> nrow(transposedData)
+
+To get number of colunmns, we use the command:
+> ncol(transposedData)
+
+We can then use the *apply* function again to reproduce portfolio from the transposed matrix:
+>portfolio2 = apply(transposedData,2,mean)
+>pnl_plot(portfolio2)
+
 <br>
 <br>
 <br>
