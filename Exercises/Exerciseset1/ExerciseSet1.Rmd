@@ -103,6 +103,7 @@ To get Yahoo's Data, we have to modify the array in dataSet1.R to include Yahoo'
 > mytickers = c("SPY", "AAPL", "YHOO")
 
 YHOO = StockReturns[,"YHOO"]
+
 sum(YHOO)
 [1] 2.887016
 
