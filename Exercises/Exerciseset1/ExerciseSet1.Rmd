@@ -160,6 +160,7 @@ To get number of colunmns, we use the command:
 
 We can then use the *apply* function again to reproduce portfolio from the transposed matrix:
 >portfolio2 = apply(transposedData,2,mean)
+
 >pnl_plot(portfolio2)
 
 <br>
@@ -180,7 +181,14 @@ This is an important step and will get you to think about the overall process on
 
 **Your Answers here:**
 <br>
+The program does not include the first data point. To include 2001-01-01, we must change the start date variable to the day before in file dataSet1.R
+
+> startDate = "2000-12-31"
+
 <br>
+We can get returns of other companies simply by changing the array code. For example, the command below will get you ticker data from Skyworks Solutions, Wells Fargo, and General Mills
+> mytickers = c("SWKS", "WFC", "GIS")
+get
 <br>
 <br>
 
@@ -214,6 +222,7 @@ myData + StockReturns[1:40,])
 
 **Your Answers here:**
 <br>
+The command counts number of events where there is inconsistency between value in myData to value in StockReturns
 <br>
 <br>
 <br>
