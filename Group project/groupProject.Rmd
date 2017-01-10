@@ -1,0 +1,25 @@
+---
+title: "testing"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+GroupProjectData <- read.csv("My Data1/Boats.csv", sep=";")
+```
+
+## Introduction
+
+This is our group project
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r , echo=FALSE}
+hist(GroupProjectData[,2])
+```
+
+We can do more analysis.
+
+```{}
+
