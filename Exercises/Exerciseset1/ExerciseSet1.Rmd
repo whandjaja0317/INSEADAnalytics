@@ -153,15 +153,16 @@ We can also transpose the matrix of returns to create a new "horizontal" matrix.
 **Your Answers here:**
 <br>
 To get number of rows, we use the command:
-> nrow(transposedData)
+```nrow(transposedData)```
 
 To get number of colunmns, we use the command:
-> ncol(transposedData)
+```ncol(transposedData)```
 
 We can then use the *apply* function again to reproduce portfolio from the transposed matrix:
->portfolio2 = apply(transposedData,2,mean)
-
->pnl_plot(portfolio2)
+```
+portfolio2 = apply(transposedData,2,mean)
+pnl_plot(portfolio2)
+```
 
 <br>
 <br>
@@ -188,7 +189,7 @@ The program does not include the first data point. To include 2001-01-01, we mus
 <br>
 We can get returns of other companies simply by changing the array code. For example, the command below will get you ticker data from Skyworks Solutions, Wells Fargo, and General Mills
 > mytickers = c("SWKS", "WFC", "GIS")
-get
+
 <br>
 <br>
 
