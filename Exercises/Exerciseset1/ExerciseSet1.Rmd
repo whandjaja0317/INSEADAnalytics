@@ -65,7 +65,7 @@ testing now
 
 ### Part I: Statistics of S&P Daily Returns
 
-We have `r nrow(StockReturns)` days of data, starting from `r rownames(StockReturns)[1]` until `r tail(rownames(StockReturns),1)`.  Here are some basic statistics about the S&P returns:
+We have `{r nrow(StockReturns)}` days of data, starting from `r rownames(StockReturns)[1]` until `r tail(rownames(StockReturns),1)`.  Here are some basic statistics about the S&P returns:
 
 1. The cumulative returns of the S&P index during this period is `r round(100*sum(StockReturns[,1]),1)`%.
 2. The average daily returns of the S&P index during this period is `r round(100*mean(StockReturns[,1]),3)`%;
