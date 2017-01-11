@@ -164,6 +164,14 @@ print(m1,'chart')
 
 **Your Answers here:**
 <br>
+1. Based on the table, 6 factors will explain more than 50% of the variance
+
+2. 5-year T-notes US and 10-year T-notes, both have a weight of 0.93
+
+3. The first ten are principal components as they provide. They are stable futures that can be interpreted as cost of capital
+
+4.
+
 <br>
 <br>
 <br>
