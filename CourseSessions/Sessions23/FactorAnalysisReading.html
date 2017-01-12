@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Derived Attributes and Dimensionality Reduction</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Derived Attributes and Dimensionality Reduction">
+  <meta name="author" content="T. Evgeniou">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="http://slidifylibraries2.googlecode.com/git/inst/libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="http://slidifylibraries2.googlecode.com/git/inst/libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="http://slidifylibraries2.googlecode.com/git/inst/libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="http://slidifylibraries2.googlecode.com/git/inst/libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="http://slidifylibraries2.googlecode.com/git/inst/libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="http://slidifylibraries2.googlecode.com/git/inst/libraries/frameworks/io2012/js/slides" 
+    src="http://slidifylibraries2.googlecode.com/git/inst/libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Derived Attributes and Dimensionality Reduction</h1>
+    <h2></h2>
+    <p>T. Evgeniou<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h1>What is this for?</h1>
+  </hgroup>
+  <article data-timings="">
+    <p>One of the key steps in Data Analytics is to generate meaningful attributes starting from possibly a large number of <strong>raw attributes</strong>. Consider for example the case of customer data, where for each customer we have a very large number of raw attributes (which could be, for example, <em>independent variables</em> in the case of a regression used to predict acquisition, purchases, or churn) ranging from demographic information, to what products they bought in the past, who their friends on various social media sites are, what websites they visit more often, how they rated a number of movies or products in general, whether they use their mobile phone mostly the weekends or in the mornings, how they responded to various surveys, etc. One can easily end up with tens if not thousands of such raw attributes, for thousands or millions of customers. In such cases it is virtually impossible to use some of the &quot;advanced&quot; methodologies developed for data analytics, or even simple ones such as linear regression. This is not only because of compuational reasons but, more important, because of statistical/mathematical reasons as, doing so entails a high risk that the estimated models (e.g. consumer behavior models) may be of very low quality in a statistical hence also practical sense. Moreover, the insights developed may not be practical or actionable as they may correspond to complicated statements involving a very large number of raw customer attributes.  </p>
+
+<p>In such situations, which arise almost always in practice, one needs to spend a lot of creative effort and time - based on a deep contextual knowledge - to generate new  attributes (e.g. &quot;this customer is price sensitive&quot;, or &quot;this customer likes comfort&quot;, or &quot;this customer is status conscious&quot;, etc) from the original raw ones, which we call here <strong>derived attributes</strong>. These attributes can be generated manually, or using what we call <strong>data or dimensionality reduction statistical techniques</strong>. </p>
+
+<p>We will consider a specific family of such statistical techniques which we will broadly call <strong>Factor Analysis techniques</strong>. Such techniques are often used at the early stages of a data analytics project, for example before running a regression with many independent variables (the raw attributes in that case), in order to summarize information (the variation) in correlated raw attributes using a smaller number of manageable <strong>factors</strong> - which are typically uncorrelated or independent. In the process one decreases the number of raw attributes while <strong>keeping most of the information in the data, in a statistical sense</strong>. </p>
+
+<p>Such derived variables are usually useful also for managerial interpretation and action. For example, when analyzing survey data from students regarding the quality of a school, the quality of education may be a useful variable, but in a student survey one could instead ask several questions related to this: (1) Breadth of courses; (2) Depth of courses; (3) Quality of Instruction; (4) Practicality of coursework, etc. A &quot;good linear combination&quot; of these raw attributes may be more managerially useful in understanding student perceptions of the quality of education than each of these variables alone. If indeed these variables are highly related to the underlying construct of &quot;quality of education&quot;, Factor analysis will be able to summarize the information into such a single factor, while capturing most of the information in those &quot;raw&quot; attributes.</p>
+
+<blockquote>
+<p>Before proceeding on understanding the statistical techniques considered here, it is important to note that this is not the only approach to generating meaningful derived attributes from large numbers of raw ones: there is always &quot;the manual approach&quot;&quot; based on contextual knowledge and intuition, which can probably take a data analytics project already very far. However, in terms of mathematical techniques used in data analytics, factor analysis is one of the key ones when it comes to generating new meaningful derived attributes from the original raw ones.</p>
+</blockquote>
+
+<h1>An Example</h1>
+
+<p>There are many dimensionality reduction statistical methods. In this note we will go through the steps of one specific approach. We will do so using a simple example. For this example the &quot;meaningful derived variables&quot; will seem to be straightforward to design, which can help us with the intuition of what the method does. Having said this, before reading the analysis below, do try to think what &quot;derived attributes&quot; one could get from the raw ones below. You will see that even in this case it is not as obvious and you will most likely disagree with your colleagues about what the derived attributes should be: so we will let the numbers and statistics help us be more <em>objective and statistically correct</em>.</p>
+
+<h2>The &quot;Business Decision&quot;</h2>
+
+<p>We consider the core decision of an MBA admissions committee: <em>which applicants should we accept in the MBA program?</em> The school is interested in predicting the MBA participant&#39;s success in the future before offering admission.</p>
+
+<h2>The Data</h2>
+
+<p>To make this decision, the committee uses a number of data about the applicants. Let us consider for example the following attributes in evaluating an MBA application (of course in practice many more can be considered):</p>
+
+<ol>
+<li>GPA </li>
+<li>GMAT score </li>
+<li>Scholarships, fellowships won </li>
+<li>Evidence of Communications skills (debating competition, personal interview score) </li>
+<li>Prior Job Experience </li>
+<li>Organizational Experience </li>
+<li>Other extra curricular achievements </li>
+</ol>
+
+<p>Let us assume that this data is converted into a numerical scale from 1-7. For example: a numerical rating may be given to the fellowships based on the prestige and the number of fellowships won. Job experience may be rated on the number of years on the job, with a numerical weighting for the level of the job in the managerial ladder.</p>
+
+<p>This is how the first 10 data looks:</p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">GPA</th>
+<th align="right">GMAT</th>
+<th align="right">Fellow</th>
+<th align="right">Comm</th>
+<th align="right">Job.Ex</th>
+<th align="right">Organze</th>
+<th align="right">Extra</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">observation 01</td>
+<td align="right">3.0</td>
+<td align="right">580</td>
+<td align="right">2.0</td>
+<td align="right">3.5</td>
+<td align="right">5</td>
+<td align="right">3.8</td>
+<td align="right">4.0</td>
+</tr>
+<tr>
+<td align="left">observation 02</td>
+<td align="right">3.2</td>
+<td align="right">570</td>
+<td align="right">2.0</td>
+<td align="right">3.8</td>
+<td align="right">6</td>
+<td align="right">3.8</td>
+<td align="right">3.8</td>
+</tr>
+<tr>
+<td align="left">observation 03</td>
+<td align="right">3.7</td>
+<td align="right">690</td>
+<td align="right">3.0</td>
+<td align="right">3.3</td>
+<td align="right">3</td>
+<td align="right">3.2</td>
+<td align="right">3.6</td>
+</tr>
+<tr>
+<td align="left">observation 04</td>
+<td align="right">3.9</td>
+<td align="right">760</td>
+<td align="right">3.0</td>
+<td align="right">3.8</td>
+<td align="right">5</td>
+<td align="right">3.9</td>
+<td align="right">3.2</td>
+</tr>
+<tr>
+<td align="left">observation 05</td>
+<td align="right">2.8</td>
+<td align="right">480</td>
+<td align="right">2.0</td>
+<td align="right">3.2</td>
+<td align="right">6</td>
+<td align="right">3.8</td>
+<td align="right">3.8</td>
+</tr>
+<tr>
+<td align="left">observation 06</td>
+<td align="right">3.4</td>
+<td align="right">520</td>
+<td align="right">2.5</td>
+<td align="right">2.6</td>
+<td align="right">2</td>
+<td align="right">2.5</td>
+<td align="right">2.4</td>
+</tr>
+<tr>
+<td align="left">observation 07</td>
+<td align="right">3.6</td>
+<td align="right">670</td>
+<td align="right">3.0</td>
+<td align="right">3.7</td>
+<td align="right">4</td>
+<td align="right">3.5</td>
+<td align="right">2.9</td>
+</tr>
+<tr>
+<td align="left">observation 08</td>
+<td align="right">3.6</td>
+<td align="right">760</td>
+<td align="right">3.0</td>
+<td align="right">3.9</td>
+<td align="right">5</td>
+<td align="right">3.3</td>
+<td align="right">3.2</td>
+</tr>
+<tr>
+<td align="left">observation 09</td>
+<td align="right">2.8</td>
+<td align="right">380</td>
+<td align="right">1.0</td>
+<td align="right">2.0</td>
+<td align="right">3</td>
+<td align="right">2.9</td>
+<td align="right">3.1</td>
+</tr>
+<tr>
+<td align="left">observation 10</td>
+<td align="right">3.6</td>
+<td align="right">560</td>
+<td align="right">3.0</td>
+<td align="right">2.8</td>
+<td align="right">2</td>
+<td align="right">1.0</td>
+<td align="right">2.8</td>
+</tr>
+</tbody></table>
+
+<p>We will see some descriptive statistics of the data later, when we get into statistical analysis.</p>
+
+<h2>The Approach</h2>
+
+<p>How can this data inform the school&#39;s admission decisions? Does this data capture some &quot;derived attributes&quot; that may have a meaning? If you were to derive 2 or 3 attrributes from the data above (by combining them in various ways, for example), what would those be? Which raw attributes would be &quot;linked&quot; with the derived ones you think of? <strong>Try it</strong> intuitively before reading any further...</p>
+
+<p>Intuitively it may seem that the data above capture two fundamental abilities that affect the success of students in their management careers: </p>
+
+<ol>
+<li>Basic intelligence </li>
+<li>Team and Leadership skills. </li>
+</ol>
+
+<p>The school may be interested for example in picking students who score high on these two areas. In this case, of course the admissions commitee in theory could just ask the applicants two questions: </p>
+
+<ol>
+<li>&quot;How intelligent are you?&quot; </li>
+<li>&quot;How strong are your team and leadership skills?&quot; </li>
+</ol>
+
+<p>As you can imagine, asking these questions would not only make the admissions interviewers look naive, but would also lead to very noisy and misleading answers: of course everyone will just answer both questions with the highest mark. So instead of asking these &quot;naive&quot; questions, the school is using <em>raw attributes/data</em> like the ones above, which can also be gathered easier. The idea then is to see how this data can be &quot;translated&quot; in meaningful derived attributes that, for example, could capture the &quot;equivalent answers&quot; one could get if one were to ask directly the two naive questions above - or possibly other such &quot;complex&quot;&quot; questions. </p>
+
+<blockquote>
+<p>Factor analysis is a statistical approach for finding  a few &quot;hidden&quot; derived attributes in data by combining together groups of the original raw attributes in such a way that the least information in the original data is lost - in a statistical sense. It is part of a general class of statistical methodologies used to do what is often called &quot;dimensionality reduction&quot;. </p> </blockquote></p>
+</blockquote>
+
+<p>Back to our example, if there is some way in which we could reduce the 7 attributes into a smaller set of, say, 2 or 3 attributes, then we can reduce the data to a more understandable form so that our decision making process can be made potentially simpler, more actionable, and easier to interpret and justify - without losing much information in the original data. It is  much easier to make tradeoffs between two or three attributes than it is between 10 or 20 attributes (look at any survey or application form and you will see that there are easily more than 20 questions). Hence, </p>
+
+<blockquote>
+<p>Data reduction is a very useful step in helping us interpret the data and make decisions.</p>
+</blockquote>
+
+<p>Like for our example, theory may suggest that there are really one or two basic factors (like intelligence and leadership skills) that lead to success in a management career. The various attributes are really different manifestations of these basic factors. But maybe there are other hidden derived variables (factors) in the data we have: instead of us manually combining raw attributes into meaningful derived ones, which not only is diffucult with many data but also dangerous as we impose our biases, let&#39;s get <em>factor analysis</em> to do the job for us - and use our intuition and judgment in the process. </p>
+
+<p>Let&#39;s now see <strong>a</strong> process for using factor analysis in order to create derived attributes, the goal of this report. </p>
+
+<h1>A 6-steps Process for Dimensionality Reduction</h1>
+
+<blockquote>
+<p>It is important to remember that Data Analytics Projects require a delicate balance between experimentation, intuition, but also following (once a while) a process to avoid getting fooled by randomness and &quot;finding results and patterns&quot; that are mainly driven by our own biases and not by the facts/data themselves.</p>
+</blockquote>
+
+<p>There is <em>not one</em> process for factor analysis. However, we have to start somewhere, so we will use the following process:</p>
+
+<ol>
+<li>Confirm the data in metric </li>
+<li>Decide whether to scale or standardize the data</li>
+<li>Check the correlation matrix to see if Factor Analysis makes sense</li>
+<li>Develop a scree plot and decide on the number of factors to be derived</li>
+<li>Interpret the factors (consider factor rotations - technical but useful)</li>
+<li>Save factor scores for subsequent analyses</li>
+</ol>
+
+<p>Let&#39;s follow these steps.</p>
+
+<h2>Step 1: Confirm data is metric</h2>
+
+<p>Steps 1-3 are about specific descriptive characteristics of the data. In particular, the methods we consider in this note require that the data are <em>metric</em> (step 1): this means not only that all data are numbers, but also that the numbers have an actual numerical meaning, that is 1 is less than 2 which is less than 3 etc. If we have other types of data (e.g. gender, categories that are not comparable, etc), there are other methods to use. However, for now we will only consider a specific method, which we will also mis-use for non-numeric data for simplicity. </p>
+
+<p>The data we use here have the following descriptive statistics: </p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">min</th>
+<th align="right">25 percent</th>
+<th align="right">median</th>
+<th align="right">mean</th>
+<th align="right">75 percent</th>
+<th align="right">max</th>
+<th align="right">std</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">GPA</td>
+<td align="right">2.5</td>
+<td align="right">2.80</td>
+<td align="right">3.45</td>
+<td align="right">3.31</td>
+<td align="right">3.62</td>
+<td align="right">3.9</td>
+<td align="right">0.47</td>
+</tr>
+<tr>
+<td align="left">GMAT</td>
+<td align="right">380.0</td>
+<td align="right">480.00</td>
+<td align="right">575.00</td>
+<td align="right">583.50</td>
+<td align="right">682.50</td>
+<td align="right">760.0</td>
+<td align="right">119.44</td>
+</tr>
+<tr>
+<td align="left">Fellow</td>
+<td align="right">1.0</td>
+<td align="right">2.00</td>
+<td align="right">2.80</td>
+<td align="right">2.45</td>
+<td align="right">3.00</td>
+<td align="right">3.8</td>
+<td align="right">0.91</td>
+</tr>
+<tr>
+<td align="left">Comm</td>
+<td align="right">2.0</td>
+<td align="right">3.18</td>
+<td align="right">3.40</td>
+<td align="right">3.34</td>
+<td align="right">3.73</td>
+<td align="right">3.9</td>
+<td align="right">0.49</td>
+</tr>
+<tr>
+<td align="left">Job.Ex</td>
+<td align="right">2.0</td>
+<td align="right">3.00</td>
+<td align="right">5.00</td>
+<td align="right">4.25</td>
+<td align="right">5.25</td>
+<td align="right">6.0</td>
+<td align="right">1.52</td>
+</tr>
+<tr>
+<td align="left">Organze</td>
+<td align="right">1.0</td>
+<td align="right">3.05</td>
+<td align="right">3.40</td>
+<td align="right">3.20</td>
+<td align="right">3.80</td>
+<td align="right">3.9</td>
+<td align="right">0.73</td>
+</tr>
+<tr>
+<td align="left">Extra</td>
+<td align="right">2.4</td>
+<td align="right">2.88</td>
+<td align="right">3.40</td>
+<td align="right">3.30</td>
+<td align="right">3.80</td>
+<td align="right">4.0</td>
+<td align="right">0.52</td>
+</tr>
+</tbody></table>
+
+<blockquote>
+<p>Note that one should spend a lot of time getting a feeling of the data based on simple summary statistics and visualizations: good data analytics require that we understand our data very well.</p>
+</blockquote>
+
+<h2>Step 2: Scale the  data</h2>
+
+<p>This step is optional (many methods standardize the data automatically anyway). </p>
+
+<p>Note that for this data, while 6 of the &quot;survey&quot; data are on a similar scale, namely 1-7, there is one variable that is about 2 orders of magnitude larger: the GMAT variable. Having some variables with a very different range/scale can often create problems: <strong>most of the &quot;results&quot; may be driven by a few large values</strong>, more so that we would like. To avoid such issues, one has to consider whether or not to <strong>standardize the data</strong> by making some of the initial raw attributes have, for example,  mean  0 and standard deviation 1 (e.g. <code>scaledGMAT = (GMAT-mean(GMAT)) / sd(GMAT)</code>), or scaling them between 0 and 1 (e.g. <code>scaledGMAT = (GMAT-min(GMAT)) / (max(GMAT)-min(GMAT))</code>). Here is for example the R code for the first approach, if we want to standardize all attributes:</p>
+
+<pre><code class="r">ProjectDatafactor_scaled = apply(ProjectDataFactor, 2, function(r) {
+    if (sd(r) != 0) 
+        res = (r - mean(r))/sd(r) else res = 0 * r
+    res
+})
+</code></pre>
+
+<p>Notice now the summary statistics of the scaled dataset:</p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">min</th>
+<th align="right">25 percent</th>
+<th align="right">median</th>
+<th align="right">mean</th>
+<th align="right">75 percent</th>
+<th align="right">max</th>
+<th align="right">std</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">GPA</td>
+<td align="right">-1.72</td>
+<td align="right">-1.08</td>
+<td align="right">0.31</td>
+<td align="right">0</td>
+<td align="right">0.68</td>
+<td align="right">1.27</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="left">GMAT</td>
+<td align="right">-1.70</td>
+<td align="right">-0.87</td>
+<td align="right">-0.07</td>
+<td align="right">0</td>
+<td align="right">0.83</td>
+<td align="right">1.48</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="left">Fellow</td>
+<td align="right">-1.60</td>
+<td align="right">-0.50</td>
+<td align="right">0.39</td>
+<td align="right">0</td>
+<td align="right">0.61</td>
+<td align="right">1.49</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="left">Comm</td>
+<td align="right">-2.73</td>
+<td align="right">-0.33</td>
+<td align="right">0.13</td>
+<td align="right">0</td>
+<td align="right">0.80</td>
+<td align="right">1.16</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="left">Job.Ex</td>
+<td align="right">-1.48</td>
+<td align="right">-0.82</td>
+<td align="right">0.49</td>
+<td align="right">0</td>
+<td align="right">0.66</td>
+<td align="right">1.15</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="left">Organze</td>
+<td align="right">-2.99</td>
+<td align="right">-0.20</td>
+<td align="right">0.27</td>
+<td align="right">0</td>
+<td align="right">0.82</td>
+<td align="right">0.95</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="left">Extra</td>
+<td align="right">-1.75</td>
+<td align="right">-0.83</td>
+<td align="right">0.19</td>
+<td align="right">0</td>
+<td align="right">0.97</td>
+<td align="right">1.36</td>
+<td align="right">1</td>
+</tr>
+</tbody></table>
+
+<p>As expected all variables have mean 0 and standard deviation 1. </p>
+
+<p>While this is typically a necessary step, one has to always do it with care: some times you may want your analytics findings to be driven mainly by a few attributes that take large values; other times having attributes with different scales may imply something about those attributes. For example, when students rate their schools on various factors on a 1-7 scale, if the variability is minimal on a certain variable (e.g. satisfaction about the IT infrastructure of the school) but very high on another one (e.g. satisfaction with job placement), then standardization will reduce the real big differences in placement satisfaction and magnify the small differences in IT infrastructure satisfaction. In many such cases one may choose to skip step 2 for some of the raw attributes. Hence standardization is not a necessary data transformation step, and you should use it judiciously. </p>
+
+<h2>Step 3:  Check correlations</h2>
+
+<p>The type of dimensionality reduction methods we will use here &quot;groups together raw attributes that are highly correlated&quot;. Other methods (there are many!) use different criteria to create derived variables.  For this to be feasible, it is necessary that the original raw attributes do have large enough correlations (e.g. more than 0.5 in absolute value, or simply statistically significant). It is therefore useful to see the correlation matrix of the original attributes - something that one should anyway always do in order to develop a better understanding of the data. </p>
+
+<p>This is the correlation matrix of the 7 original variable we use for factor analysis (Note: this would be the same for the standardized ones if the standardization is done as above; there is a mathematical reason for this that we will not explore - you could confirm it yourself):</p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">GPA</th>
+<th align="right">GMAT</th>
+<th align="right">Fellow</th>
+<th align="right">Comm</th>
+<th align="right">Job.Ex</th>
+<th align="right">Organze</th>
+<th align="right">Extra</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">GPA</td>
+<td align="right">1.00</td>
+<td align="right">0.90</td>
+<td align="right">0.92</td>
+<td align="right">0.56</td>
+<td align="right">0.15</td>
+<td align="right">-0.03</td>
+<td align="right">0.01</td>
+</tr>
+<tr>
+<td align="left">GMAT</td>
+<td align="right">0.90</td>
+<td align="right">1.00</td>
+<td align="right">0.86</td>
+<td align="right">0.78</td>
+<td align="right">0.33</td>
+<td align="right">0.19</td>
+<td align="right">0.16</td>
+</tr>
+<tr>
+<td align="left">Fellow</td>
+<td align="right">0.92</td>
+<td align="right">0.86</td>
+<td align="right">1.00</td>
+<td align="right">0.59</td>
+<td align="right">0.18</td>
+<td align="right">0.01</td>
+<td align="right">0.02</td>
+</tr>
+<tr>
+<td align="left">Comm</td>
+<td align="right">0.56</td>
+<td align="right">0.78</td>
+<td align="right">0.59</td>
+<td align="right">1.00</td>
+<td align="right">0.60</td>
+<td align="right">0.47</td>
+<td align="right">0.39</td>
+</tr>
+<tr>
+<td align="left">Job.Ex</td>
+<td align="right">0.15</td>
+<td align="right">0.33</td>
+<td align="right">0.18</td>
+<td align="right">0.60</td>
+<td align="right">1.00</td>
+<td align="right">0.80</td>
+<td align="right">0.77</td>
+</tr>
+<tr>
+<td align="left">Organze</td>
+<td align="right">-0.03</td>
+<td align="right">0.19</td>
+<td align="right">0.01</td>
+<td align="right">0.47</td>
+<td align="right">0.80</td>
+<td align="right">1.00</td>
+<td align="right">0.61</td>
+</tr>
+<tr>
+<td align="left">Extra</td>
+<td align="right">0.01</td>
+<td align="right">0.16</td>
+<td align="right">0.02</td>
+<td align="right">0.39</td>
+<td align="right">0.77</td>
+<td align="right">0.61</td>
+<td align="right">1.00</td>
+</tr>
+</tbody></table>
+
+<p>There are quite a few large (in absolute value) correlations. For example  GPA, GMAT and Fellowship seem to be highly positively correlated - as expected? Maybe those can be grouped in one &quot;factor&quot;? How about &quot;Communication Skills&quot;? Should that also be part of that same factor? With what weights should we combine these raw attributes in groups? Remember, this is a very simple example where one could possibly derive attributes manually. In practice most of the time data are not as easy to understand, with many more than 7 raw attributes. However, even in this simple example people often disagree about how to group the 7 raw attributes!</p>
+
+<p>Let&#39;s now see what factor analysis suggests as factors. </p>
+
+<h2>Step 4: Choose number of factors</h2>
+
+<p>There are many statistical methods to generate derived variables from raw data. One of the most standard ones is <strong>Principal Component Analysis</strong>. This method finds factors, called <strong>Principal Components</strong>, which are <strong>linear combinations of the original raw attributes</strong> so that most of the information in the data, measured using  <strong>variance explained</strong> (roughly &quot;how much of the variability in the data is captured by the selected components&quot;) is captured by only a few factors. The components are developed typically so that they are <strong>uncorrelated</strong>, leading to <em>at most as many factors as the number of the original raw attributes, but</em> so that only a few are needed (the <em>principal compontents</em>) to keep most of the information (variance/variability) in the raw data. For example, for our data we have 7 raw attributes hence we can only have a total of 7 factors/compontents, each of them being a linear combination of the 7 original raw data. </p>
+
+<p>While there are as many (and for other methods, more) factors as the number of the original raw attributes, since our goal is to have a small(er) number of derived variables/factors, one question is whether we could use only a few of the components without losing much information. When this is feasible, we can say that the original raw attributes can be &quot;compressed&quot; to a few principal components/factors/derived variables. Note that this is not necessarily feasible - e.g. when the original raw attributes are uncorrelated and each one provides &quot;trully different information from all the others&quot; (in this case &quot;different&quot; means &quot;uncorrelated&quot;, but other statistical measures of &quot;different&quot; can be used, such as &quot;statistically independent information&quot;, leading to other well known dimensionality reduction methods such as <em>Independent Component Analysis (ICA)</em>, etc). </p>
+
+<p>When using PCA, we have two measures of &quot;how much of the information (variance in this case) in the original raw data is captured by any of the factors&quot;: </p>
+
+<p>a) the <em>percentage of variance explained</em>, 
+b) the <em>eigenvalue coresponding to the compontent</em>.</p>
+
+<p>Each factor has an eigenvalue as well as the percentage of the variance explained. The sum of the eigenvalues of the components is equal to the number of original raw attributes used for factor analysis, while the sum of the percentages of the variance explained across all components is 100%. For example, for our data these are:</p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">Eigenvalue</th>
+<th align="right">Pct of explained variance</th>
+<th align="right">Cumulative pct of explained variance</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">Component 1</td>
+<td align="right">3.74</td>
+<td align="right">53.48</td>
+<td align="right">53.48</td>
+</tr>
+<tr>
+<td align="left">Component 2</td>
+<td align="right">2.27</td>
+<td align="right">32.40</td>
+<td align="right">85.88</td>
+</tr>
+<tr>
+<td align="left">Component 3</td>
+<td align="right">0.42</td>
+<td align="right">6.07</td>
+<td align="right">91.95</td>
+</tr>
+<tr>
+<td align="left">Component 4</td>
+<td align="right">0.29</td>
+<td align="right">4.11</td>
+<td align="right">96.06</td>
+</tr>
+<tr>
+<td align="left">Component 5</td>
+<td align="right">0.14</td>
+<td align="right">1.99</td>
+<td align="right">98.05</td>
+</tr>
+<tr>
+<td align="left">Component 6</td>
+<td align="right">0.10</td>
+<td align="right">1.41</td>
+<td align="right">99.46</td>
+</tr>
+<tr>
+<td align="left">Component 7</td>
+<td align="right">0.04</td>
+<td align="right">0.54</td>
+<td align="right">100.00</td>
+</tr>
+</tbody></table>
+
+<p>Note that the &quot;first principal component&quot; has the highest eigenvalue and captures most of the information (variance in this case) of the original raw data. As a rule of thumb, every component with eigenvalue more than 1 &quot;has more information that the average original raw attribute&quot;. Typically one uses only these factors, although what is also important to consider is &quot;what total percentage of the variance in the original data is kept when one replaces the original data/attributes with the selected factors/components&quot;.</p>
+
+<blockquote>
+<p>Two Statistical criteria to select the number of factors/derived variables when using PCA are: a) select components with corresponding eigenvalue larger than 1; b) Select the components with the highest eigenvalues &quot;up to the component&quot; for which the cumulative total variance explained is relatively large (e.g. more than 50%).</p>
+</blockquote>
+
+<p>One can also plot the eigenvalues of the generated factors in decreasing order: this plot is called the <strong>scree plot</strong>. For our data this plot looks as follows:</p>
+
+<p><img src="data:image/png;base64,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" title="plot of chunk figure01" alt="plot of chunk figure01" style="display: block; margin: auto;" /></p>
+
+<blockquote>
+<p>A third rule of thumb to decide how many components to use is to consider only the factors up to the &quot;elbow&quot; of the scree plot.</p>
+</blockquote>
+
+<p>Based on the three criteria (eigenvalue &gt; 1, cumulative percentage of variance explained, and the elbow of the scree plot), and using our current selection criterion, namely eigenvalue, for this data we can decide to use 2 components only. In practice one may try different numbers of factors/components as one needs to consider not only the statistical rules discussed here, but also the interpretation and actionability of the selected components: as always, data analytics is about both science and art. We consider interpretability of the derived attributes/factors next. </p>
+
+<h2>Step 5: Interpret the factors</h2>
+
+<p>In practice one would like to have derived variables that use only a few of the original raw attributes - while each new derived variable using different subsets of the original raw attributes. Unfortunately this is not necessarily always the case. However, there are mathematical methods, called &quot;factor <strong>rotations</strong>&quot;, which transform the estimated factors into new ones which capture exactly the same information from the raw data but use only few non-overlaping raw attributes. One such rotation often used in practice is called the varimax rotation - but others are also available. </p>
+
+<p>For our data, the 2 selected factors look as follows after the varimax rotation: </p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">Component 1</th>
+<th align="right">Component 2</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">GPA</td>
+<td align="right">0.96</td>
+<td align="right">-0.05</td>
+</tr>
+<tr>
+<td align="left">GMAT</td>
+<td align="right">0.95</td>
+<td align="right">0.19</td>
+</tr>
+<tr>
+<td align="left">Fellow</td>
+<td align="right">0.95</td>
+<td align="right">-0.01</td>
+</tr>
+<tr>
+<td align="left">Comm</td>
+<td align="right">0.70</td>
+<td align="right">0.54</td>
+</tr>
+<tr>
+<td align="left">Job.Ex</td>
+<td align="right">0.19</td>
+<td align="right">0.93</td>
+</tr>
+<tr>
+<td align="left">Organze</td>
+<td align="right">0.01</td>
+<td align="right">0.89</td>
+</tr>
+<tr>
+<td align="left">Extra</td>
+<td align="right">0.01</td>
+<td align="right">0.86</td>
+</tr>
+</tbody></table>
+
+<p>To better visualize and interpret the factors we often &quot;supress&quot; loadings with small values, e.g. with absolute values smaller than 0.5. In this case our factors look as follows after suppressing the small numbers:</p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">Component 1</th>
+<th align="right">Component 2</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">GPA</td>
+<td align="right">0.96</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="left">GMAT</td>
+<td align="right">0.95</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="left">Fellow</td>
+<td align="right">0.95</td>
+<td align="right"></td>
+</tr>
+<tr>
+<td align="left">Comm</td>
+<td align="right">0.70</td>
+<td align="right">0.54</td>
+</tr>
+<tr>
+<td align="left">Job.Ex</td>
+<td align="right"></td>
+<td align="right">0.93</td>
+</tr>
+<tr>
+<td align="left">Organze</td>
+<td align="right"></td>
+<td align="right">0.89</td>
+</tr>
+<tr>
+<td align="left">Extra</td>
+<td align="right"></td>
+<td align="right">0.86</td>
+</tr>
+</tbody></table>
+
+<p>Notice that after rotation each factor combines (we say &quot;loads on&quot;) only a few of the original raw attributes, making interpretation easier. For example, if we only select the factors with eigenvalue more than 1, in this case we would select 2 factors.</p>
+
+<p>How would you interpret the selected factors?</p>
+
+<p>What Factor Loads &quot;Look Good&quot;? We often use three <strong>Factor Technical Quality Criteria</strong>:</p>
+
+<ol>
+<li>For each factor (column) only a few loadings are large (in absolute value)</li>
+<li>For each raw attribute (row) only a few loadings are large (in absolute value)</li>
+<li>Any pair of factors (columns) should have different &quot;patterns&quot; of loading</li>
+</ol>
+
+<h2>Step 6: Save factor scores</h2>
+
+<p>Once we decided the factors to use (for now), we typically replace the original data with a new dataset where each observation (row) is now described not using the original raw attributes but using instead the selected factors/derived attributes. Afterall this was the goal of this analysis. </p>
+
+<p>The way to represent our observations using the found derived attributes (factors/components) is to estimate for each observation (row) how it &quot;scores&quot; for each of the selected factor. These numbers are called <strong>factor scores</strong>. Effectively they are the &quot;scores&quot; the observation would take on the factor had we measured that factor directly instead of measuring the original raw attributes. </p>
+
+<p>(<strong>Note:</strong> Sometimes for simplicity we represent each selected factor using one of the original raw attributes, typically the one on which the factor has the highest loading on. Although this is not statistically as accurate, it may help with the interpretation of subsequent analyses.)</p>
+
+<p>For our data, using the rotated factors we selected, we can create a new dataset where our observations are as follows (for the first 10 observations):</p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">Derived Variable (Factor) 1</th>
+<th align="right">Derived Variable (Factor) 2</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">observation 01</td>
+<td align="right">-0.46</td>
+<td align="right">1.05</td>
+</tr>
+<tr>
+<td align="left">observation 02</td>
+<td align="right">-0.23</td>
+<td align="right">1.21</td>
+</tr>
+<tr>
+<td align="left">observation 03</td>
+<td align="right">0.68</td>
+<td align="right">-0.24</td>
+</tr>
+<tr>
+<td align="left">observation 04</td>
+<td align="right">1.13</td>
+<td align="right">0.40</td>
+</tr>
+<tr>
+<td align="left">observation 05</td>
+<td align="right">-0.94</td>
+<td align="right">1.10</td>
+</tr>
+<tr>
+<td align="left">observation 06</td>
+<td align="right">-0.14</td>
+<td align="right">-1.67</td>
+</tr>
+<tr>
+<td align="left">observation 07</td>
+<td align="right">0.76</td>
+<td align="right">-0.17</td>
+</tr>
+<tr>
+<td align="left">observation 08</td>
+<td align="right">1.02</td>
+<td align="right">0.21</td>
+</tr>
+<tr>
+<td align="left">observation 09</td>
+<td align="right">-1.76</td>
+<td align="right">-0.72</td>
+</tr>
+<tr>
+<td align="left">observation 10</td>
+<td align="right">0.43</td>
+<td align="right">-2.14</td>
+</tr>
+</tbody></table>
+
+<p>Can you describe the observations using the new derived variables? How does each person perform for each of the selected factors?</p>
+
+<p>We now can replace our original data with the new ones and continue our analysis. For example, we can now visualize our original data using only the newly derived attributes:</p>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtAAAAHUCAMAAAAk8O8lAAAAkFBMVEUjO0NVVVVVVXRVVZFVdHRVdK9VkcplrcJ0VVV0VXR0VZF0dFV0dHR0dK90kZF0kcp0r+WCalCRVVWRVXSRVZGRkXSRkZGRr+WRyv+vdFWvdHSvdJGvr5Gvr8qvyq+v5f/KkVXKkXTKypHK5a/K/8rK///lr3TlypHl/+Xl///u5Nr/ypH/5a///8r//+X///+sLmX7AAAACXBIWXMAAAsSAAALEgHS3X78AAAPs0lEQVR4nO3dDVvb5hWHcQyFmC5rXJZ2ZuuK2xWt2DJ8/283vfHiRsJHRi/P/5z7d/UKMTE5GN9V9MiyffYEOHI29zcADImg4QpBwxWChisEDVcIGq4QNFwhaLhC0HCFoOEKQcMVgoYrBA1XCBquEDRcIWi4QtBwhaDhCkHDFYKGKwQNVwgarhA0XCFouELQcIWg4QpBw5UPBf3jUN9Ff9v5RjM7ZQTNbIXZZgTNbIXZZgTNbIXZZqpBA60IGq4QNFwhaLiiGnTUxVHU2WYEzWyF2WYEzWyF2WYEzWyF2WaqQQOtCBquEDRcIWgpnz7N/R2kTjXomIujT5/mLJpF4YgIenoEPaKYQc+7y0HQIwoadNjZZqpBA60IGq4QNFwhaLiiGnTUxVHU2WYEzWyF2WYEzWyF2WYEzWyF2WaqQQOtCBquEDRcIWi4ohp01MVR1NlmBM1shdlmBM1shdlmBM1shdlmqkEDrQgarhA0XCFouKIadNTFUdTZZgTNbIXZZlMGfTbg+zBHvWOjzjabMOizswGLjnrHRp1tpho00Ep1lwNopboodIEXxx0eQc9n3tcSdUo1aA+Lo1OC9nC7R5V20N13uIs79oQNtIvbPaakg35nExb1jo0624yg+2N2wpIOuvvfZI4Aol3aQXfhMRp0IGi4ohk0uxzoIBp02MVR1NlmYwQ9xeYz6h0bdbbZCEFPsoMb9Y6NOtuMoJmtMNtMdZdjMJwf5IvqonAonPHmTN+g8+u71wsEjdT0DDpfnvsKml0OZ/oFnV//erCF3m6rhcI21sdtIt9HMrc7Jaq7HFFX+1FnmxE0sxVmmxE0sxVmm6kGDbSKfhwazhA0XCFouKIadNTFUdTZZgTNbIXZZgTNbIXZZgTte7aXF5k3Uw3ahfFPHI/39HiCns8EtRF0LwT9IVPUFq1ngp5TuNomoBq00sKM2RMi6BRnd2+6fd/uARB0grPf2bl2fbuHQNAJzibo06kG7RurxZNFCZondwcRJGhefuPjNH6CBA0bkR+hatB9FyhD3hkxF2YEPaqYUc06W6Jngma2xGwzgma2kcaxxCSC1vjHLDiRM1FTCFpkuREcQZsRtASJnpMIml0ODCaJoE8QdGEWdrYZQTNbYbYZQTNbYbYZQTNbYbaZatBAK4KGKwQNVwgarqgGHXVxFHW2GUGnOLv7oVPft3sABJ3g7HdObnF9u4dA0AnOJujTqQbtG2drnYyg4QpBwxWChiuqQSstjry8cQ+LwhEJ3bGDPhlP6HbPg6BHn03QUyLo8WezyzEh1aBnxEHilBF0X7zoQtIIui+CTlraQSf52iZdPSf5zYaTdNBSb54zzUtlpXe7E0PQ/RF0wpIOWusNKCfZ5Ujwdqcl7aC7Rb1jo842Uw0aaEXQcIWg4QpBwxXVoKMujqLONiNoZivMNiNoZivMNiNoZivMNlMNGmhF0HCFoOEKQcMV1aCjLo6izjYLH/QJJ31GjYqgRzTUD/eU0/KjRkXQIyLoWLPNVIMeDE9t9SV80PCFoOEKQcMV1aCjLo6izjYjaGYrzDYjaGYrzDYjaBezJ3n9SILGRHhF1BcE7QFBvyBoF+j5GUG7wAP4z1SDTnBhNuNs/y/la0bQHmYT9AuCdjHb/WtTmxE0sxVmm6kGDbTqGXS2WKxeLxE0UtMv6Pz6rvjv5SJBIzX9gt5d3O9v1i8Xf9xuq/2qLR9Df0xJv6Czy4eDoIf+buyiLo6izjb72BZ66O/GLuodG3W2meo+dNQ7NupsM9WjHFHv2KizzTgODVcIGq4QNFwhaLiiGnTUxZHO7JfDYbuL+7cXR0bQzB55NkFbdP1wp3hynWBU48/eFNnmy9X+ZrG4fNgtFhf/vb5rLpz/rfi1DHpzcNB3HM6CnuTpz8lGNefsIuanrNoW787vdot1s0kuL5wXZa+Ki9nh48zjUA26A8/nn83m8s/bYvtbbIWrhp+aTXJxoch8c1VcLC6Nv4l2FnTnLgdPix5bfv1LWW65i/EcdHNhsW620JcP438b3oLuMM2zSGPblFvfYu/5u+W6Cfr5QrMP/Xhb7lKP/F0QNFw5fjdvFhd/fL1v/aP0FoWdhuw52YWZ49lmR+/nYk/+4o+b9n8phIJmtvZss2NBF7vz+6/39bHxbxA0s1NjCzobJOghj6hFvWOjzjaz7HIUrlr/rF/Q3ceIWbBhKMdTyjp7HipoDkFgMFMetuveQBM0BnJ8H7ra5Rh3UUjPGEoSQZ8g6uIo6mwz27YxG2JROKiod2zqs9/uVubLYlP45uy6/TePz/129/T0eFteZff6SMfL1fIv337Vt3/HX9iC5jg0s02zDxb+ZZD7f7x3Xv9v1Rmm5dZy03JaaUvQu459hVfscjB7wNnfBP2Urerz+rPP5RkURcH53x/qE/03i4ufyqAf/1V9srzaVXO1+vf5DzfFr/v6YnXa6eN/Hv89TNDtp2XrnJyEiRzscnwpftmtyi1wts6qNIvfZ+v6E8Wvzea7aL74r7h2kXZ9tfr3+fdFyuv6q4ovqP7ODwf9LoLGO+ot9Dqrzusvki3S3H8ttr/NJ9bNLkexef6zzDQrnw1QX63+ff7P8v+H/fMXVH/nB4Nuts8J7nIgfdU+dLF9rVJ8LvXn1VP9iWKzW+5slH775aq6QrmFrq5W/77aD1m//A0Vgka7CY79Px/lKM+eWDdBV880rD5R/Hr+uQ66fD5Aee3zn5qr1b/PPy9f96EXznc5El8cJT/7lEdnfRyH3qW5hfYQ1ZyzwwZdPg+MoB3OPmGXw0XQ+5t1dvmQtT/5nKCZnRpD0OXTd5PbQgOtju9yVK/uRNDQcHRPKv/+fscjhVChetgOaGU4l6P75fVYFDI7NaaTk7peYK8jaF7SltmzMexylI879nmhGV7SltnzMe1D58s+RzkIOvDst4/XDP+MFcPLPY6whZ5klwNJOnhEffhnrJRXbbvm2+/gyHd4yj40wvom6GGfsVLKPhx0kkc5kKaDXY4vT4M/Y6Xenr/3DXzkuydovGOMZ6xsjvQsG3TqiyNmj/GMlXoB+S6CZvZYs4d/xorhbYcImtkKs80ImtkKs81UgwZaETRcIWi4QtBwRTXoqIujqLPNCJrZCrPNCJrZCrPNCJrZCrPNVIMGWhE0XCFouELQcEU16KiLo6izzQi6S/frzUaNiqBHNPoP951XBI8aFUGPiKBjzTZTDXp8E7yrDoZH0HCFoOEKQcMV1aCjLo6izjYjaGYrzDYjaGYrzDYjaGYrzDZTDRpoRdBwhaDhCkHDFdWgE1wcTfLWMgne7rQQ9FCzJ3nzrwRvd2IIeqjZBJ0Egh5sNrscKVANGmhF0HBFNGjerBbtNIOeZgEGQQTdX9SFGYvC8cy6gY4aFUGPKOodG3W2GUEzW2G2Wd+gq7e2fcZhO6SmZ9D58pygkbB+QefXvx5sobfb6p+hLR9Df0wJuxxwpUfQ2eLyIZmgoy6Oos42U91CR71jo842I2hmK8w24zg0sxVmm6kGDbQiaLhC0HCFoOGKatBRF0dRZ5sRNLMVZpsRNLMVZpsRNLMVZpupBg20Imi4QtBwhaDhimrQURdHUWebETSzFWabETSzFWabETSzFWabqQYNtCJouELQcIWg4Ypq0FEXR1FnmxG079lDvpA2QY9IKaoZZ5/wVgdnnUkQ9IiEoppzdv+gz846iyZozO6EDXT3JloBQeOQds8EDV8IGq6oBi20MGP2lAia2QqzzQia2QqzzQia2QqzzVSDxlhmfdfpjyPooLq6PeHB8qQQdEyd3RI0FHV3q92zbNBRF0eDzT6hWxaFI3IRFbOHR9DMVphtRtDMVphtphp0UOLndk6AoJWon30/AYJWQtBHEbQUej5GNeioi6Oos80ImtkKs80ImtkKs80ImtkKs81UgwZaETRcIWi4QtBwRTXoqIujqLPNCJrZCrPNCJrZCrPNCJrZCrPNVIPuwtk7wTkLmvMroyNouOIsaHY5olMNOuriKOpsM4JmtsJsM4JmtsJsM4JmtsJsM9Wgxyf+ooVREXQH9ZeVjYqgOxC0JoLuQs+SVIOOujiKOtuMoJmtMNuMoJmtMNuMoJmtMNtMNWigFUHDFYKGKwQNV1SDjro4ijrbjKCZrTDbjKCZrTDbjKCZrTDbTDVooBVBwxWChisEDVdUg466OIo624ygma0w24ygma0w26xf0I+3i8XV60WCZnZq+gWdXdzvb9YvF1kUIjW9dzkOgt5uq/9rt3wM/TElfYN+vE1jlwNo1SPobHH5sL9ZvfkMQSM1/bbQhz2zKGR2cvoFvVkUklgURr1jo8424zg0sxVmmxE0sxVmm6kGDbQiaLhC0HCFoOGKatBRF0dRZ5sRdG+zvlktQR9B0H3N+3biBH0EQfdF0ElTDXpGs+5y4AiChisEDVcIGq6oBh11cRR1thlBM1ththlBM1ththlBM1thtplq0EArgoYrBA1XCBquqAYddXEUdbYZQTNbYbYZQTNbYbYZQTNbYbbZx4IGEjsywMnqcIWg4QpBwxWChisEDVcIGq4QNFwhaLhC0HCFoOGKZtCbxeL8bpbJ+fVd+Y6Ni9Xxq44ze5ab3rzH+0y3uxfJoB9v5/q55suipiKsqq05Zs9z0+v3eJ/pdvcjGfT+ptpgTC+//rW4R3fV3TvP7NluenGL57ndPUkGvTu/m+snW26isvItomcYX86e66aX7/E+1+3uRTLop/n2OvLZttDNPvQ8N716T2y20GOZ8SdbRjXXvuR8/zPV7/HOPvRoNrMtt1M4yjH97OY93jnKAUyMoOEKQcMVgoYrBA1XCPqYnXFln38prpr6UVr/CPoYY9D7m1kekcZfEHS3fFme2LZb/LAsm86qQ7HNJ/c33y3LkyqqR4SLP1iV56Nd/q+4Qv3n+fLgizAZgu5UbnOz87vd4vIhW6zz5eppc35XfSgfrbu4fz0Hrf7MVbnL0XxRvrz88/bivvmiuW9JJATdKau2tKtyl6P4kC+LhOtPNt2Wj9ztylp35SnKTdDNFzXdN1+E6RB0p6zatbgqV3p1rYvFxX25D1HsYVRBP96ussuHMtrNQdDFb5ugmy+a+5ZEQtCdDrfQ1WfqYJ+el4DZ1WZVXe11l+NwC9180Yw3IhyC7pQvX/ehyw+rMtiy1KzeHjfPIcnKHZCXLXTzRU3QzRfNfUsiIehuh0c5yr2H5sO62UI/3l4+VM+3+7n41GZx8fuboxyvuxzJn6DmCkHDFYKGKwQNVwgarhA0XCFouELQcIWg4QpBwxWChisEDVcIGq4QNFwhaLhC0HCFoOEKQcMVgoYrBA1XCBquEDRcIWi4QtBwhaDhCkHDFYKGKwQNVwgarvwfQhkj/w68hUAAAAAASUVORK5CYII=" title="plot of chunk figure02" alt="plot of chunk figure02" style="display: block; margin: auto;" /></p>
+
+<p>Remember that we still see a lot of the information in the original data (the total variance explained using 2 factors) using only this 2-dimensional plot! This is of course only the begining of the analysis using the new attributes. Later on one may need to come back to these tools to generate new derived variables. As always remember that </p>
+
+<blockquote>
+<p>Data Analytics is an iterative process, therefore we may need to return to our original raw data at any point and select new raw attributes as well as new factors and derived variables.</p>
+</blockquote>
+
+<p><strong>Till then...</strong></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='What is this for?'>
+         1
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="http://slidifylibraries2.googlecode.com/git/inst/libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
