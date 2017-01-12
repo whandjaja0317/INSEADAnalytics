@@ -1,6 +1,6 @@
 ---
 title: "A Market Segmentation and Purchase Drivers Process"
-author: "T. Evgeniou"
+author: "William Handjaja, Nathan Kung, Egor Gazarov, Dmitry Kalachev"
 output:
   html_document:
     css: ../../AnalyticsStyles/default.css
@@ -206,11 +206,11 @@ iprint.df(round(thecor,2), scale=TRUE)
 
 **Answers:**
 
+*The highest correlations are between Q1.13-Q1.14 (correlation 0.64), and also Q1.16-Q1.17 (correlation 0.63), and Q1.27-Q1.28 (correlation 0.62). These make sense. For example, 13-14 talks about the latest and greatest, 16-17 talks about the boating knowledge/experience of customer, and 27-28 talks about passion
 *
+*The correlations imply similarity in the topics addressed by the questions. The questions that have high correlations can be grouped together into one factor.
 *
-*
-*
-*
+*However, since the correlation values are not very high,it is hard to condense the factors, which means that the customer segments are likely to be very fragmented and there are a lot of factors they go through in the purchasing decision.
 *
 *
 *
