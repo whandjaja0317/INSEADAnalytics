@@ -263,7 +263,7 @@ iplot.df(melt(df, id="components"))
 **Answers**
 
 *
-*
+*The table and plot 
 *
 *
 *
@@ -321,11 +321,13 @@ iprint.df(Rotated_Factors_thres, scale=TRUE)
 **Answers**
 
 *
+*The first component addresses the customers' purpose in buying the boats. Customers buy boats to use in trips, whether to relax or for adventure. (Q21, 18, 19, 24)
 *
+*The second component addresses the cutomers' dedication to the boating topic. This is shown through question related to passion and whether the customers actively try to learn more (Q 28,27,16,17)
 *
+* Thrd component is about the branding/status of the boat manufacturer, how 
 *
-*
-*
+*We choose to put 6 factors to reduce the number of questions captured in each components. If we have more time, we would be analyzing the content of the questions too. At our level, we have about 5-6 questions captured in each component
 *
 *
 *
